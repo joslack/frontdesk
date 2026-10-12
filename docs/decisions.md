@@ -60,7 +60,9 @@ reach the other.
 desk agent in this repository is one more client of the same server and has nothing the customer's agent lacks.
 
 **Why.** Jonah, 2026-10-11: "my goal is to really be not the intelligence layer, but the data and information
-layer ... the access layer", and "companies are a data plan or a capability plan and the agent is mine".
+layer ... the access layer", and "companies are a data plan or a capability plan and the agent is mine". Jonah,
+2026-10-12: "my aim is to enable generic agentic access at the interface layer and to automate subprocesses
+reliably internally".
 
 **Cost.** Quillstack writes none of the instructions of the agent its customer talks to. What it wants that agent
 to do, it can only publish (record 16).
@@ -296,6 +298,9 @@ the store, and the file tools those need. It has no shell, no subagents, and may
 Its tools come from the access server over MCP, each call signed with the token of the person it is talking to.
 
 **Why.** Jonah, 2026-10-11: "we should also use the deep agent abstraction", with the refund policy as a skill.
+Jonah, 2026-10-12: "the interface could trivially be deep agents if the company wanted it to be, the 'deep agent'
+harness is arbitrary". The design does not rest on this choice. An agent on any harness gets the same tools from
+the access server (record 2), as long as it sends the token of the person it is talking to with each call.
 
 **Cost.** Taking tools away needs a harness profile that is global to the process. `langchain-mcp-adapters` cannot
 be imported beside FastMCP 4, so the tools come through `langchain.mcp.MCPAdapter`, which is in beta.
