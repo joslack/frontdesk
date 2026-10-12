@@ -1,0 +1,10 @@
+{
+  "python_version": "3.12",
+  "dependencies": ["."],
+  "graphs": {
+    "refund": {"path": "./src/frontdesk/jobs/refund.py:graph", "description": "Decides one refund request under the policy, waits for the review of a person, and carries out what was approved."},
+    "ticket": {"path": "./src/frontdesk/jobs/ticket.py:graph", "description": "Files a support request as a ticket, drafts an answer for the team, waits for the review of a person, and sends what was approved."}
+  },
+  "auth": {"path": "./src/frontdesk/jobs/auth.py:auth", "disable_studio_auth": true},
+  "http": {"disable_mcp": true, "disable_a2a": true, "disable_ui": true}
+}
