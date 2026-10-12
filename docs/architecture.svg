@@ -46,12 +46,12 @@
   <text class="b" x="270" y="355">person in, and the token</text>
   <text class="b" x="270" y="376">that every service checks.</text>
 
-  <rect class="box" x="506" y="250" width="290" height="152" rx="10"/>
-  <text class="tag" x="526" y="276">LANGGRAPH SERVER</text>
+  <rect class="box" x="506" y="250" width="290" height="152" rx="10" stroke-dasharray="7 5"/>
+  <text class="tag" x="526" y="276">LANGGRAPH SERVER · OPTIONAL</text>
   <text class="t" x="526" y="306">Desk agent</text>
-  <text class="b" x="526" y="334">Quillstack's own agent, for a</text>
-  <text class="b" x="526" y="355">customer with none. A deep agent</text>
-  <text class="b" x="526" y="376">with skills, notes and a gate.</text>
+  <text class="b" x="526" y="334">Quillstack's own chat agent, for a</text>
+  <text class="b" x="526" y="355">customer who brings none. A deep</text>
+  <text class="b" x="526" y="376">agent with skills, notes and a gate.</text>
 
   <rect class="box" x="880" y="250" width="320" height="152" rx="10"/>
   <text class="tag" x="900" y="276">MCP</text>
