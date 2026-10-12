@@ -36,6 +36,7 @@ documentation, **from refundo** for what refundo measured, **not checked**.
 | 20 | The retention desk speaks A2A, and code releases each offer | Jonah's, and made in the build |
 | 21 | Every model call is traced to one LangSmith project of frontdesk's own | Jonah's |
 | 22 | Everything runs on k3s, from plain manifests | Jonah's, and made in the build |
+| 23 | A customer's token is passed on as it is, and nothing exchanges it | Made in the build |
 
 ---
 
@@ -273,7 +274,14 @@ signs its person in with a browser, as the public client `frontdesk-cli`, with P
 resource server that points an agent to Keycloak.
 
 **Why.** Jonah, 2026-10-11: "we can either mock the auth impl, or host something in our local k3s cluster". A real
-issuer means every service checks tokens the way it would in production.
+issuer means every service checks tokens the way it would in production. Keycloak stands in for any auth server
+that speaks OpenID Connect; Jonah, 2026-10-12: "keycloak is a proxy for any auth server". What frontdesk needs
+from one is published signing keys, a sign-in with a browser for a public client, a token for each service, and
+three things in a token: who the person is, their roles, and an audience.
+
+**What is Keycloak's own in the code.** The names of two claims, `preferred_username` and `realm_access.roles`, in
+`identity.py`. The shape of three addresses in `settings.py`. The realm file and its manifest. The sign-in with a
+password that the command line and the tests use, which many auth servers do not offer.
 
 **Cost.** An agent that registers itself when it first connects is not set up. Keycloak runs in development mode
 and makes new signing keys when it restarts, which ends every sign-in.
@@ -396,3 +404,29 @@ laptop and not for production.
 
 **Known.** Seen: `make up` to twelve running pods on this machine. Not checked: `make up` from nothing on another
 machine.
+
+## 23. A customer's token is passed on as it is, and nothing exchanges it
+
+**Decision.** There is no token exchange and no on-behalf-of grant. One token, with the audience `frontdesk`, is
+accepted by every service. Where a part acts for a customer at another part, it sends the customer's own token on:
+
+- The desk agent keeps the token of the person it is talking to and sends it with each call to the access server.
+- The access server sends the caller's token to the retention desk when it relays a message.
+- The access server does not use a token at the database. It signs in as the person's own Postgres role, with a
+  password it derives.
+- The workers never act as a customer. The dispatcher calls the jobs deployment with its own identity, and a
+  request says who asked because the customer's database role wrote it.
+
+**Why.** It is the least that works: each part checks the same signature, issuer and audience, and who is asking
+is the same person at every hop.
+
+**Cost.** A service that receives a customer's token could use it at any other service, because the audience is
+the same for all of them. The access server cannot tell Quillstack's desk agent from the customer's own agent,
+which the design wants for answers and an audit would not. The desk deployment stores each person's token with
+their runs, for an hour. With an exchange, the desk agent would trade the customer's token for one that names the
+access server as its audience and the desk agent as the actor, and that is the token it would hold.
+
+**Known.** Read: the only grants in the code are a password and client credentials, both in `signin.py`; the
+browser sign-in is done by the customer's agent. Read: the three places a token is sent on are
+`desk/agent.py`, `access/retention.py` and `access/server.py`. Not checked: whether Keycloak 26.4 would do the
+exchange as configured here.

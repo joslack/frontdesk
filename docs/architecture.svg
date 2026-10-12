@@ -41,10 +41,10 @@
   <!-- Facing customers -->
   <rect class="box" x="250" y="250" width="220" height="152" rx="10"/>
   <text class="tag" x="270" y="276">OAUTH</text>
-  <text class="t" x="270" y="306">Keycloak</text>
-  <text class="b" x="270" y="334">Signs a person in, and</text>
-  <text class="b" x="270" y="355">signs the token that</text>
-  <text class="b" x="270" y="376">every service checks.</text>
+  <text class="t" x="270" y="306">Auth server</text>
+  <text class="b" x="270" y="334">Keycloak here. Signs a</text>
+  <text class="b" x="270" y="355">person in, and the token</text>
+  <text class="b" x="270" y="376">that every service checks.</text>
 
   <rect class="box" x="506" y="250" width="290" height="152" rx="10"/>
   <text class="tag" x="526" y="276">LANGGRAPH SERVER</text>

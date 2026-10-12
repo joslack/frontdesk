@@ -49,7 +49,7 @@ uv run --env-file .env frontdesk review lena     # Quillstack's reviewer: decide
 
 ### Connect an agent of your own
 
-The access server is an OAuth resource server, and Keycloak signs people in. To connect Claude Code as it is, with
+The access server is an OAuth resource server. An auth server signs people in: Keycloak here, standing in for any that speaks OpenID Connect. To connect Claude Code as it is, with
 its own tools beside Quillstack's:
 
 ```
