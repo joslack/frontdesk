@@ -1,0 +1,53 @@
+# The access server: the one door a customer's agent comes through, at http://localhost:18000/mcp.
+#
+# Its Secret holds the key from which each customer's database password is derived, and the key that signs export
+# links. It has no model key, no service identity and no role that reads past one customer.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: access
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: access}
+  template:
+    metadata:
+      labels: {app: access}
+    spec:
+      containers:
+        - name: access
+          image: frontdesk-app:dev
+          imagePullPolicy: Never
+          command: ["python", "-m", "frontdesk.access.server"]
+          envFrom:
+            - secretRef: {name: access}
+          env:
+            - {name: PORT, value: "8000"}
+            - {name: DATABASE_HOST, value: postgres}
+            - {name: DATABASE_PORT, value: "15432"}
+            - {name: KEYCLOAK_URL, value: "http://keycloak:8080"}
+            - {name: ACCESS_PUBLIC_URL, value: "http://localhost:18000"}
+            - {name: EXPORT_DIR, value: /exports}
+            - {name: RETENTION_URL, value: "http://retention:18200"}
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8000}
+            periodSeconds: 5
+          volumeMounts:
+            - {name: exports, mountPath: /exports}
+      volumes:
+        # An export lives as long as its link, so the files need no more than the pod's own disk. With more than
+        # one replica they have to be on storage every replica reads.
+        - name: exports
+          emptyDir: {sizeLimit: 1Gi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: access
+spec:
+  type: LoadBalancer
+  selector: {app: access}
+  ports:
+    - {port: 18000, targetPort: 8000}

@@ -1,0 +1,89 @@
+# The conversation deployment: LangGraph Server with the desk agent (langgraph.desk.json), built as the image
+# frontdesk-desk by `make images`. A customer's chat client calls it at http://localhost:18123 with their token.
+#
+# As in the jobs deployment, desk-api answers HTTP and desk-queue runs the turns. Its Secret holds the model keys,
+# the desk's own identity and the password of its own state database. It holds nothing that opens the records
+# database or the jobs deployment: what the agent does for a customer, it does through the access server with that
+# customer's token.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: desk-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: desk-api}
+  template:
+    metadata:
+      labels: {app: desk-api, deployment: desk}
+    spec:
+      containers:
+        - name: api
+          image: frontdesk-desk:dev
+          imagePullPolicy: Never
+          envFrom:
+            - secretRef: {name: desk}
+          env:
+            - {name: PORT, value: "8000"}
+            - {name: DATABASE_URI, value: "postgres://desk_state:$(DESK_STATE_PASSWORD)@postgres:15432/desk?sslmode=disable"}
+            - {name: REDIS_URI, value: "redis://desk-redis:6379"}
+            - {name: LANGSMITH_TRACING, value: "true"}
+            - {name: LANGSMITH_PROJECT, value: frontdesk}
+            - {name: ACCESS_URL, value: "http://access:18000"}
+            - {name: KEYCLOAK_URL, value: "http://keycloak:8080"}
+            - {name: N_JOBS_PER_WORKER, value: "0"}
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet: {path: /ok, port: 8000}
+            periodSeconds: 5
+            failureThreshold: 30
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: desk-queue
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: desk-queue}
+  template:
+    metadata:
+      labels: {app: desk-queue, deployment: desk}
+    spec:
+      # Longer than the server's own grace period for runs in flight (BG_JOB_SHUTDOWN_GRACE_PERIOD_SECS), so a pod
+      # that is asked to stop can put its runs back in the queue before it is killed.
+      terminationGracePeriodSeconds: 90
+      containers:
+        - name: queue
+          image: frontdesk-desk:dev
+          imagePullPolicy: Never
+          command: ["/storage/queue_entrypoint.sh"]
+          envFrom:
+            - secretRef: {name: desk}
+          env:
+            - {name: PORT, value: "8000"}
+            - {name: DATABASE_URI, value: "postgres://desk_state:$(DESK_STATE_PASSWORD)@postgres:15432/desk?sslmode=disable"}
+            - {name: REDIS_URI, value: "redis://desk-redis:6379"}
+            - {name: LANGSMITH_TRACING, value: "true"}
+            - {name: LANGSMITH_PROJECT, value: frontdesk}
+            - {name: ACCESS_URL, value: "http://access:18000"}
+            - {name: KEYCLOAK_URL, value: "http://keycloak:8080"}
+            - {name: N_JOBS_PER_WORKER, value: "5"}
+            - {name: BG_JOB_SHUTDOWN_GRACE_PERIOD_SECS, value: "60"}
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet: {path: /ok, port: 8000}
+            periodSeconds: 5
+            failureThreshold: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: desk
+spec:
+  type: LoadBalancer
+  selector: {app: desk-api}
+  ports:
+    - {port: 18123, targetPort: 8000}

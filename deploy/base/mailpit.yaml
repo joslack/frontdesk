@@ -1,0 +1,31 @@
+# Mailpit stands in for the mail provider: it accepts every message the notifier sends and shows it in a web page
+# at http://localhost:18025. Nothing leaves the cluster.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailpit
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: mailpit}
+  template:
+    metadata:
+      labels: {app: mailpit}
+    spec:
+      containers:
+        - name: mailpit
+          image: axllent/mailpit:latest
+          ports:
+            - containerPort: 1025
+            - containerPort: 8025
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailpit
+spec:
+  type: LoadBalancer
+  selector: {app: mailpit}
+  ports:
+    - {name: web, port: 18025, targetPort: 8025}
+    - {name: smtp, port: 1025, targetPort: 1025}

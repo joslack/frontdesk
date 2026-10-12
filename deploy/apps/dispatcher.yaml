@@ -1,0 +1,28 @@
+# The dispatcher: the one process that holds the identity the jobs deployment accepts. It turns request rows into
+# worker runs, resumes them with answers and reviews, starts failed ones again, and mails notices.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dispatcher
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: dispatcher}
+  template:
+    metadata:
+      labels: {app: dispatcher}
+    spec:
+      containers:
+        - name: dispatcher
+          image: frontdesk-app:dev
+          imagePullPolicy: Never
+          command: ["python", "-m", "frontdesk.dispatcher"]
+          envFrom:
+            - secretRef: {name: dispatcher}
+          env:
+            - {name: DATABASE_HOST, value: postgres}
+            - {name: DATABASE_PORT, value: "15432"}
+            - {name: KEYCLOAK_URL, value: "http://keycloak:8080"}
+            - {name: JOBS_URL, value: "http://jobs:8000"}
+            - {name: SMTP_HOST, value: mailpit}
+            - {name: SMTP_PORT, value: "1025"}

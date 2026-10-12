@@ -1,0 +1,347 @@
+{
+  "realm": "frontdesk",
+  "displayName": "Quillstack",
+  "enabled": true,
+  "accessTokenLifespan": 3600,
+  "ssoSessionIdleTimeout": 43200,
+  "ssoSessionMaxLifespan": 86400,
+  "roles": {
+    "realm": [
+      {
+        "name": "owner"
+      },
+      {
+        "name": "billing_admin"
+      },
+      {
+        "name": "member"
+      },
+      {
+        "name": "reviewer"
+      },
+      {
+        "name": "service"
+      },
+      {
+        "name": "desk"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "frontdesk-cli",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": [
+        "http://localhost:*",
+        "http://127.0.0.1:*"
+      ],
+      "webOrigins": [
+        "+"
+      ],
+      "protocolMappers": [
+        {
+          "name": "audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "frontdesk",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "frontdesk-service",
+      "publicClient": false,
+      "secret": "${SERVICE_CLIENT_SECRET}",
+      "standardFlowEnabled": false,
+      "serviceAccountsEnabled": true,
+      "protocolMappers": [
+        {
+          "name": "audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "frontdesk",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "frontdesk-desk",
+      "publicClient": false,
+      "secret": "${DESK_CLIENT_SECRET}",
+      "standardFlowEnabled": false,
+      "serviceAccountsEnabled": true,
+      "protocolMappers": [
+        {
+          "name": "audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "frontdesk",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "dana",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "dana@acme.example",
+      "firstName": "Dana",
+      "lastName": "Okafor",
+      "realmRoles": [
+        "owner"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "priya",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "priya@acme.example",
+      "firstName": "Priya",
+      "lastName": "Raman",
+      "realmRoles": [
+        "billing_admin"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "marcus",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "marcus@acme.example",
+      "firstName": "Marcus",
+      "lastName": "Lee",
+      "realmRoles": [
+        "member"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "tom",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "tom@acme.example",
+      "firstName": "Tom",
+      "lastName": "Becker",
+      "realmRoles": [
+        "member"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "elena",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "elena@birch.example",
+      "firstName": "Elena",
+      "lastName": "Marsh",
+      "realmRoles": [
+        "owner"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "farid",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "farid@birch.example",
+      "firstName": "Farid",
+      "lastName": "Haddad",
+      "realmRoles": [
+        "billing_admin"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "grace",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "grace@birch.example",
+      "firstName": "Grace",
+      "lastName": "Liu",
+      "realmRoles": [
+        "member"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "hugo",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "hugo@birch.example",
+      "firstName": "Hugo",
+      "lastName": "Stein",
+      "realmRoles": [
+        "member"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "ines",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "ines@birch.example",
+      "firstName": "Ines",
+      "lastName": "Duarte",
+      "realmRoles": [
+        "member"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "kenji",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "kenji@cobalt.example",
+      "firstName": "Kenji",
+      "lastName": "Watanabe",
+      "realmRoles": [
+        "owner"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "lola",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "lola@cobalt.example",
+      "firstName": "Lola",
+      "lastName": "Ferrer",
+      "realmRoles": [
+        "member"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "lena",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "lena@quillstack.example",
+      "firstName": "Lena",
+      "lastName": "Fischer",
+      "realmRoles": [
+        "reviewer"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "omar",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "omar@quillstack.example",
+      "firstName": "Omar",
+      "lastName": "Reyes",
+      "realmRoles": [
+        "reviewer"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "service-account-frontdesk-service",
+      "enabled": true,
+      "serviceAccountClientId": "frontdesk-service",
+      "realmRoles": [
+        "service"
+      ]
+    },
+    {
+      "username": "service-account-frontdesk-desk",
+      "enabled": true,
+      "serviceAccountClientId": "frontdesk-desk",
+      "realmRoles": [
+        "desk"
+      ]
+    }
+  ]
+}

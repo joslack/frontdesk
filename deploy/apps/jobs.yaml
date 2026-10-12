@@ -1,0 +1,92 @@
+# The jobs deployment: LangGraph Server with the workers' graphs (langgraph.jobs.json), built as the image
+# frontdesk-jobs by `make images`.
+#
+# The same image runs twice. jobs-api answers HTTP and runs nothing (N_JOBS_PER_WORKER is 0). jobs-queue takes
+# runs from the queue in Postgres and executes them, and is the one to scale when requests back up. A run that a
+# queue pod drops, because the pod was stopped or died, goes back to the queue and continues from its last
+# checkpoint.
+#
+# Only the dispatcher calls it, so its Service has no address outside the cluster.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jobs-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: jobs-api}
+  template:
+    metadata:
+      labels: {app: jobs-api, deployment: jobs}
+    spec:
+      containers:
+        - name: api
+          image: frontdesk-jobs:dev
+          imagePullPolicy: Never
+          envFrom:
+            - secretRef: {name: jobs}
+          env:
+            - {name: PORT, value: "8000"}
+            - {name: DATABASE_URI, value: "postgres://jobs_state:$(JOBS_STATE_PASSWORD)@postgres:15432/jobs?sslmode=disable"}
+            - {name: REDIS_URI, value: "redis://jobs-redis:6379"}
+            - {name: LANGSMITH_TRACING, value: "true"}
+            - {name: LANGSMITH_PROJECT, value: frontdesk}
+            - {name: DATABASE_HOST, value: postgres}
+            - {name: DATABASE_PORT, value: "15432"}
+            - {name: KEYCLOAK_URL, value: "http://keycloak:8080"}
+            - {name: N_JOBS_PER_WORKER, value: "0"}
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet: {path: /ok, port: 8000}
+            periodSeconds: 5
+            failureThreshold: 30
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jobs-queue
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: jobs-queue}
+  template:
+    metadata:
+      labels: {app: jobs-queue, deployment: jobs}
+    spec:
+      # Longer than the server's own grace period for runs in flight (BG_JOB_SHUTDOWN_GRACE_PERIOD_SECS), so a pod
+      # that is asked to stop can put its runs back in the queue before it is killed.
+      terminationGracePeriodSeconds: 90
+      containers:
+        - name: queue
+          image: frontdesk-jobs:dev
+          imagePullPolicy: Never
+          command: ["/storage/queue_entrypoint.sh"]
+          envFrom:
+            - secretRef: {name: jobs}
+          env:
+            - {name: PORT, value: "8000"}
+            - {name: DATABASE_URI, value: "postgres://jobs_state:$(JOBS_STATE_PASSWORD)@postgres:15432/jobs?sslmode=disable"}
+            - {name: REDIS_URI, value: "redis://jobs-redis:6379"}
+            - {name: LANGSMITH_TRACING, value: "true"}
+            - {name: LANGSMITH_PROJECT, value: frontdesk}
+            - {name: DATABASE_HOST, value: postgres}
+            - {name: DATABASE_PORT, value: "15432"}
+            - {name: KEYCLOAK_URL, value: "http://keycloak:8080"}
+            - {name: N_JOBS_PER_WORKER, value: "5"}
+            - {name: BG_JOB_SHUTDOWN_GRACE_PERIOD_SECS, value: "60"}
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet: {path: /ok, port: 8000}
+            periodSeconds: 5
+            failureThreshold: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jobs
+spec:
+  selector: {app: jobs-api}
+  ports:
+    - {port: 8000}

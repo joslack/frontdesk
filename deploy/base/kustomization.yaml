@@ -1,0 +1,16 @@
+# What the applications need before they start: Postgres, Redis, Keycloak with its realm, and a mail catcher.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: frontdesk
+resources:
+  - namespace.yaml
+  - postgres.yaml
+  - redis.yaml
+  - keycloak.yaml
+  - mailpit.yaml
+configMapGenerator:
+  - name: keycloak-realm
+    files:
+      - realm.json
+generatorOptions:
+  disableNameSuffixHash: true

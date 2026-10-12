@@ -1,0 +1,47 @@
+# The retention desk: an A2A agent at http://localhost:18200 that a customer's agent talks to about cancelling.
+#
+# It faces customers and it negotiates, so it holds as little as that takes: its model key, a database role that
+# reads a workspace's plan and people and writes offers, and its own state database for the conversations. The
+# offers it may make come from code, one at a time (frontdesk/retention/ladder.py).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retention
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: retention}
+  template:
+    metadata:
+      labels: {app: retention}
+    spec:
+      containers:
+        - name: retention
+          image: frontdesk-app:dev
+          imagePullPolicy: Never
+          command: ["python", "-m", "frontdesk.retention.server"]
+          envFrom:
+            - secretRef: {name: retention}
+          env:
+            - {name: LANGSMITH_TRACING, value: "true"}
+            - {name: LANGSMITH_PROJECT, value: frontdesk}
+            - {name: RETENTION_PORT, value: "18200"}
+            - {name: RETENTION_PUBLIC_URL, value: "http://localhost:18200"}
+            - {name: DATABASE_HOST, value: postgres}
+            - {name: DATABASE_PORT, value: "15432"}
+            - {name: KEYCLOAK_URL, value: "http://keycloak:8080"}
+          ports:
+            - containerPort: 18200
+          readinessProbe:
+            httpGet: {path: /healthz, port: 18200}
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: retention
+spec:
+  type: LoadBalancer
+  selector: {app: retention}
+  ports:
+    - {port: 18200, targetPort: 18200}

@@ -1,0 +1,55 @@
+# LangGraph Server uses Redis to pass a run's streamed output from the queue worker to the API server, and for the
+# workers' heartbeats. Nothing durable is kept in it, so each deployment has its own small one and no volume.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: desk-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: desk-redis}
+  template:
+    metadata:
+      labels: {app: desk-redis}
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: desk-redis
+spec:
+  selector: {app: desk-redis}
+  ports:
+    - {port: 6379}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jobs-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: jobs-redis}
+  template:
+    metadata:
+      labels: {app: jobs-redis}
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jobs-redis
+spec:
+  selector: {app: jobs-redis}
+  ports:
+    - {port: 6379}

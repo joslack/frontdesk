@@ -1,0 +1,93 @@
+# Who may talk to whom, enforced by the cluster and not by any agent's instructions.
+#
+# The jobs deployment decides requests and holds the role that reads every workspace. Only the dispatcher reaches
+# it. The conversation deployment and the access server face customers, so each may reach only what it needs.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: jobs-from-dispatcher-only
+spec:
+  podSelector:
+    matchLabels: {deployment: jobs}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels: {app: dispatcher}
+      ports:
+        - {port: 8000}
+---
+# The desk agent reaches the access server, Keycloak, its own state and its model providers. It has no route to
+# the jobs deployment.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: desk-reaches
+spec:
+  podSelector:
+    matchLabels: {deployment: desk}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: kube-system}
+      ports:
+        - {port: 53, protocol: UDP}
+        - {port: 53, protocol: TCP}
+    - to:
+        - podSelector: {matchLabels: {app: access}}
+        - podSelector: {matchLabels: {app: keycloak}}
+        - podSelector: {matchLabels: {app: postgres}}
+        - podSelector: {matchLabels: {app: desk-redis}}
+    # The model providers and LangSmith, which are outside the cluster. The two ranges left out are the cluster's
+    # own pods and services.
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except: [10.42.0.0/16, 10.43.0.0/16]
+---
+# The access server reaches the records database, Keycloak and the retention desk, and nothing outside the cluster.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: access-reaches
+spec:
+  podSelector:
+    matchLabels: {app: access}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: kube-system}
+      ports:
+        - {port: 53, protocol: UDP}
+        - {port: 53, protocol: TCP}
+    - to:
+        - podSelector: {matchLabels: {app: postgres}}
+        - podSelector: {matchLabels: {app: keycloak}}
+        - podSelector: {matchLabels: {app: retention}}
+---
+# The retention desk reaches the records database, Keycloak and its model provider. Like the other parts that face
+# customers, it has no route to the jobs deployment.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: retention-reaches
+spec:
+  podSelector:
+    matchLabels: {app: retention}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: kube-system}
+      ports:
+        - {port: 53, protocol: UDP}
+        - {port: 53, protocol: TCP}
+    - to:
+        - podSelector: {matchLabels: {app: postgres}}
+        - podSelector: {matchLabels: {app: keycloak}}
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except: [10.42.0.0/16, 10.43.0.0/16]
