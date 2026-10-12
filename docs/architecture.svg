@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif">
+  <title>frontdesk: the parts, who calls whom, and the path of a request</title>
+  <defs>
+    <marker id="ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#17212B"/></marker>
+    <marker id="blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2F5BD9"/></marker>
+    <style>
+      .zone { fill: #EDEBE3; }
+      .zl { font-size: 15px; font-weight: 600; fill: #5F6B76; letter-spacing: 0.07em; }
+      .zs { font-size: 15px; fill: #5F6B76; }
+      .box { fill: #FFFFFF; stroke: #17212B; stroke-width: 1.5; }
+      .out { fill: #FFFFFF; stroke: #9AA3AB; stroke-width: 1.5; }
+      .t { font-size: 22px; font-weight: 650; fill: #17212B; }
+      .b { font-size: 15.5px; fill: #47525C; }
+      .tag { font-size: 13px; font-weight: 650; fill: #2F5BD9; letter-spacing: 0.05em; }
+      .a { fill: none; stroke: #17212B; stroke-width: 1.6; marker-end: url(#ink); }
+      .r { fill: none; stroke: #2F5BD9; stroke-width: 2.6; marker-end: url(#blue); }
+      .l { font-size: 14.5px; fill: #17212B; }
+      .lr { font-size: 14.5px; fill: #2F5BD9; font-weight: 600; }
+    </style>
+  </defs>
+  <rect width="1600" height="900" fill="#F7F6F2"/>
+
+  <!-- The three sides -->
+  <rect class="zone" x="30" y="24" width="1540" height="150" rx="14"/>
+  <text class="zl" x="54" y="54">THE CUSTOMER'S SIDE</text>
+  <rect class="zone" x="30" y="196" width="1540" height="262" rx="14"/>
+  <text class="zl" x="54" y="226">QUILLSTACK, FACING CUSTOMERS</text>
+  <rect class="zone" x="30" y="480" width="1540" height="396" rx="14"/>
+  <text class="zl" x="54" y="510">QUILLSTACK, INSIDE</text>
+  <text class="zs" x="246" y="510">Nothing above this line can call the jobs deployment. A request crosses as a row.</text>
+
+  <!-- Legend -->
+  <line x1="56" y1="144" x2="104" y2="144" stroke="#2F5BD9" stroke-width="2.6"/>
+  <text class="l" x="114" y="149">the path of a request</text>
+
+  <!-- The customer's side -->
+  <rect class="box" x="850" y="62" width="380" height="94" rx="10"/>
+  <text class="t" x="872" y="100">A customer's own agent</text>
+  <text class="b" x="872" y="128">Claude Code, ChatGPT, any MCP client</text>
+
+  <!-- Facing customers -->
+  <rect class="box" x="250" y="250" width="220" height="152" rx="10"/>
+  <text class="tag" x="270" y="276">OAUTH</text>
+  <text class="t" x="270" y="306">Keycloak</text>
+  <text class="b" x="270" y="334">Signs a person in, and</text>
+  <text class="b" x="270" y="355">signs the token that</text>
+  <text class="b" x="270" y="376">every service checks.</text>
+
+  <rect class="box" x="506" y="250" width="290" height="152" rx="10"/>
+  <text class="tag" x="526" y="276">LANGGRAPH SERVER</text>
+  <text class="t" x="526" y="306">Desk agent</text>
+  <text class="b" x="526" y="334">Quillstack's own agent, for a</text>
+  <text class="b" x="526" y="355">customer with none. A deep agent</text>
+  <text class="b" x="526" y="376">with skills, notes and a gate.</text>
+
+  <rect class="box" x="880" y="250" width="320" height="152" rx="10"/>
+  <text class="tag" x="900" y="276">MCP</text>
+  <text class="t" x="900" y="306">Access server</text>
+  <text class="b" x="900" y="334">Tools to ask in SQL, export a file,</text>
+  <text class="b" x="900" y="355">open and follow a request, read a</text>
+  <text class="b" x="900" y="376">skill. Each call runs as the person.</text>
+
+  <rect class="box" x="1270" y="250" width="270" height="152" rx="10"/>
+  <text class="tag" x="1290" y="276">A2A</text>
+  <text class="t" x="1290" y="306">Retention desk</text>
+  <text class="b" x="1290" y="334">Talks to a customer who wants</text>
+  <text class="b" x="1290" y="355">to cancel. Code releases each</text>
+  <text class="b" x="1290" y="376">offer and records the outcome.</text>
+
+  <!-- Inside -->
+  <rect class="box" x="250" y="540" width="300" height="120" rx="10"/>
+  <text class="t" x="270" y="578">A person at Quillstack</text>
+  <text class="b" x="270" y="606">Reviews each decision before it is</text>
+  <text class="b" x="270" y="627">carried out: approve, edit, send back.</text>
+
+  <rect class="box" x="820" y="540" width="440" height="120" rx="10"/>
+  <text class="tag" x="840" y="564">POSTGRES</text>
+  <text class="t" x="840" y="592">Records database</text>
+  <text class="b" x="840" y="618">A login role for each person. A policy asks who</text>
+  <text class="b" x="840" y="639">signed in, so a query reads what that person may.</text>
+
+  <rect class="out" x="250" y="730" width="300" height="120" rx="10"/>
+  <text class="t" x="270" y="768">LangSmith</text>
+  <text class="b" x="270" y="796">Traces from the desk agent, the</text>
+  <text class="b" x="270" y="817">workers and the retention desk.</text>
+
+  <rect class="out" x="590" y="730" width="230" height="120" rx="10"/>
+  <text class="t" x="610" y="768">Mail</text>
+  <text class="b" x="610" y="796">A notice when a request</text>
+  <text class="b" x="610" y="817">is decided.</text>
+
+  <rect class="box" x="880" y="730" width="320" height="120" rx="10"/>
+  <text class="t" x="900" y="768">Dispatcher</text>
+  <text class="b" x="900" y="796">The one identity the jobs deployment</text>
+  <text class="b" x="900" y="817">accepts. Starts and resumes runs.</text>
+
+  <rect class="box" x="1270" y="730" width="270" height="120" rx="10"/>
+  <text class="tag" x="1290" y="754">LANGGRAPH SERVER</text>
+  <text class="t" x="1290" y="782">Jobs deployment</text>
+  <text class="b" x="1290" y="808">Refund worker, ticket worker.</text>
+  <text class="b" x="1290" y="829">Holds the refund policy.</text>
+
+  <!-- Who calls whom -->
+  <path class="a" d="M850 110 H360 V250"/>
+  <text class="l" x="605" y="100" text-anchor="middle">signs in, in a browser</text>
+
+  <path class="a" d="M1230 110 H1405 V250"/>
+  <text class="l" x="1417" y="226">A2A</text>
+
+  <path class="a" d="M796 326 H880"/>
+  <text class="l" x="838" y="314" text-anchor="middle">the same</text>
+
+  <path class="a" d="M1200 326 H1270"/>
+  <text class="l" x="1235" y="314" text-anchor="middle">relays</text>
+
+  <path class="a" d="M1340 402 V575 H1260"/>
+  <text class="l" x="1352" y="522">the plan, offers</text>
+
+  <path class="a" d="M880 790 H820"/>
+
+  <!-- The path of a request -->
+  <path class="r" d="M1040 156 V250"/>
+  <text class="lr" x="1054" y="226">MCP, with the person's token</text>
+
+  <path class="r" d="M1040 402 V540"/>
+  <text class="lr" x="1054" y="438">signs in as that person's own role</text>
+
+  <path class="r" d="M1040 660 V730"/>
+  <text class="lr" x="1054" y="702">the request's row</text>
+
+  <path class="r" d="M1200 790 H1270"/>
+  <text class="lr" x="1235" y="778" text-anchor="middle">a run</text>
+
+  <path class="r" d="M1470 730 V630 H1260"/>
+  <text class="lr" x="1458" y="686" text-anchor="end">reads every workspace,</text>
+  <text class="lr" x="1458" y="706" text-anchor="end">writes the proposal</text>
+
+  <path class="r" d="M550 600 H820"/>
+  <text class="lr" x="685" y="588" text-anchor="middle">the decision record</text>
+</svg>
