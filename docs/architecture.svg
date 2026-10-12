@@ -49,9 +49,9 @@
   <rect class="box" x="506" y="250" width="290" height="152" rx="10" stroke-dasharray="7 5"/>
   <text class="tag" x="526" y="276">LANGGRAPH SERVER · OPTIONAL</text>
   <text class="t" x="526" y="306">Desk agent</text>
-  <text class="b" x="526" y="334">Quillstack's own chat agent, for a</text>
-  <text class="b" x="526" y="355">customer who brings none. A deep</text>
-  <text class="b" x="526" y="376">agent with skills, notes and a gate.</text>
+  <text class="b" x="526" y="334">Quillstack's own. A general-purpose</text>
+  <text class="b" x="526" y="355">agent like Claude Code, with skills</text>
+  <text class="b" x="526" y="376">and MCP tools, behind sign-in.</text>
 
   <rect class="box" x="880" y="250" width="320" height="152" rx="10"/>
   <text class="tag" x="900" y="276">MCP</text>
