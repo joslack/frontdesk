@@ -1,0 +1,18 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+
+# The LangGraph development server keeps its threads here
+.langgraph_api/
+
+# Files a customer exported, when the access server runs on this machine
+exports/
+
+# Presentation prep, kept out of the repository
+deck/outline.md
+deck/*.private.md
