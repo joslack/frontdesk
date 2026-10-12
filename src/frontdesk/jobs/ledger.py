@@ -171,7 +171,10 @@ async def carry_out(db, request: str, final: dict, basis: list[str]) -> None:
                          "closed_at = now(), question = NULL, resume = NULL, updated_at = now() WHERE id = $1",
                          request, final["action"], final["amount_cents"], final["note"])
         await log(db, request, "done", **final)
-        await notify(db, row["opened_by"], request, f"Your {row['kind'].replace('_', ' ')} request has been decided", final["note"])
+        # A refund or a cancellation is decided. Anything else is answered.
+        what = row["kind"].replace("_", " ") + ("" if row["kind"] in ("bug_report", "billing_question") else " request")
+        subject = f"Quillstack has answered your {what}" if final["action"] == "answered" else f"Your {what} has been decided"
+        await notify(db, row["opened_by"], request, subject, final["note"])
 
 
 async def notify(db, person: str, request: str, subject: str, body: str) -> None:
