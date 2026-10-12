@@ -1,0 +1,10 @@
+{
+  "python_version": "3.12",
+  "dependencies": ["."],
+  "graphs": {
+    "desk": {"path": "./src/frontdesk/desk/agent.py:make_graph", "description": "The customer desk: answers a signed-in customer from their own records and opens requests for them."},
+    "remember": {"path": "./src/frontdesk/desk/memory.py:graph", "description": "Asks the desk agent, once a conversation is quiet, what to keep in its notes about the person."}
+  },
+  "auth": {"path": "./src/frontdesk/desk/auth.py:auth", "disable_studio_auth": true},
+  "http": {"disable_mcp": true, "disable_a2a": true, "disable_store": true, "disable_ui": true}
+}
