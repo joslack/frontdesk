@@ -32,6 +32,8 @@
   <!-- Legend -->
   <line x1="56" y1="144" x2="104" y2="144" stroke="#2F5BD9" stroke-width="2.6"/>
   <text class="l" x="114" y="149">the path of a request</text>
+  <line x1="56" y1="118" x2="104" y2="118" stroke="#17212B" stroke-width="1.6" stroke-dasharray="7 5"/>
+  <text class="l" x="114" y="123">built, and not in use in the demo</text>
 
   <!-- The customer's side -->
   <rect class="box" x="850" y="62" width="380" height="94" rx="10"/>
@@ -60,8 +62,8 @@
   <text class="b" x="900" y="355">open and follow a request, read a</text>
   <text class="b" x="900" y="376">skill. Each call runs as the person.</text>
 
-  <rect class="box" x="1270" y="250" width="270" height="152" rx="10"/>
-  <text class="tag" x="1290" y="276">A2A</text>
+  <rect class="box" x="1270" y="250" width="270" height="152" rx="10" stroke-dasharray="7 5"/>
+  <text class="tag" x="1290" y="276">A2A · NOT IN USE</text>
   <text class="t" x="1290" y="306">Retention desk</text>
   <text class="b" x="1290" y="334">Talks to a customer who wants</text>
   <text class="b" x="1290" y="355">to cancel. Code releases each</text>
@@ -104,13 +106,13 @@
   <path class="a" d="M850 110 H360 V250"/>
   <text class="l" x="605" y="100" text-anchor="middle">signs in, in a browser</text>
 
-  <path class="a" d="M1230 110 H1405 V250"/>
-  <text class="l" x="1417" y="226">A2A</text>
+  <path class="a" d="M1230 110 H1405 V250" stroke-dasharray="7 5"/>
+  <text class="l" x="1417" y="226">A2A, not in use</text>
 
-  <path class="a" d="M796 326 H880"/>
+  <path class="a" d="M796 326 H880" stroke-dasharray="7 5"/>
   <text class="l" x="838" y="314" text-anchor="middle">the same</text>
 
-  <path class="a" d="M1200 326 H1270"/>
+  <path class="a" d="M1200 326 H1270" stroke-dasharray="7 5"/>
   <text class="l" x="1235" y="314" text-anchor="middle">relays</text>
 
   <path class="a" d="M1340 402 V575 H1260"/>
