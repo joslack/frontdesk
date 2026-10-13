@@ -49,7 +49,7 @@ the four designs and the results.
 access layer, and the refund decision is one worker behind it. Jonah, 2026-10-11: "i want it to be cleaner and
 more production worthy than refundo".
 
-**Cost.** The worker's prompt, policy and case file are copies. A change to the policy in one repository does not
+**Cost.** The worker's prompt, policy and tools are copies. A change to the policy in one repository does not
 reach the other.
 
 **Known.** Read: `src/frontdesk/jobs/policy.md` is a copy of refundo's `docs/policy.md` as of 2026-10-12.

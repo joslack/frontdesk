@@ -1,11 +1,13 @@
 # Friction log
 
 Rough edges met while frontdesk was built on 2026-10-12, in LangGraph Server, deepagents, LangChain, FastMCP and
-Claude Code. Each entry says how it is known:
+Claude Code. The last section holds the rough edges met in the refund evaluation, which is in
+[refundo](https://github.com/joslack/refundo). Each entry says how it is known:
 
 - **seen**: it happened in this build, and the output is quoted or described.
 - **read by a subagent**: a research subagent read it in the installed source or the docs, or ran it in process
   with no server. Its notes were in `/tmp/frontdesk-research/` during the build.
+- **read in the source** or **read in the docs**: read there when the entry was written, and not run.
 - **not checked**: stated for context, and nobody tried it.
 
 Versions: langgraph 1.2.14, langgraph-api 0.16.0, langgraph-cli 0.4.33, langgraph-sdk 0.4.6, deepagents 0.7.24,
@@ -147,3 +149,48 @@ first connects.
 `--strict-mcp-config` was signed in already when its server had the name and address of one signed in through
 `claude mcp login`, and had no tools when the name was new. Seen on reading the stored sign-in: the line
 `[mcp-sdk] SEP-2352: stored OAuth credential has no 'issuer' stamp`.
+
+## The refund evaluation, in refundo
+
+These entries are from the evaluation of the refund agent, which ran from 2026-10-04 to 2026-10-07 on Harbor 0.23.0
+with harbor-langsmith 0.3.1. The LangChain source was read on 2026-10-12 in the evaluation's image, which holds
+langchain 1.4.4 and langchain-anthropic 1.7.5. The paths are refundo's. Each entry ends with a caveat, because none
+of them is a plain defect.
+
+**An annotation queue holds runs and threads, and not the cases of a dataset.** Read in the docs, on the page
+about annotation queues: "A queue can contain a mix of run items and thread items." What needed a label here was a
+case: an account's records against the policy, before any agent had run. So the labels were made on a page of
+refundo's own, `world/label_app.py`. Caveat: LangSmith is a platform for traces, and a general tool cannot cover
+every way that a team labels.
+
+**A model that LangChain does not know gets 4,096 output tokens, thinking included.** Read in the source:
+`ChatAnthropic` takes `max_tokens` from a table of known models and falls back to 4,096, and the table has no entry
+for Claude Haiku 5.5. Seen on 2026-10-07, with the `structured` agent on that model at the highest reasoning
+effort: each of the first 6 trials ended with no proposal and no error, and the job was stopped. With
+`max_tokens` set to 32,000 in `agents/shared.py`, 236 of the 240 trials at that effort made a proposal. Caveat: the
+model was new, and Anthropic's API needs a limit on every request. A warning that the fallback is in use would
+have shown the cause.
+
+**LangChain's default for a structured answer from an Anthropic model is a forced tool call.** Read in the source:
+`with_structured_output` has `method="function_calling"` as its default, which forces the call, and a comment
+there says that Anthropic's API refuses a forced tool call when thinking is on. Seen: the `pipeline` agent asks
+for its decision as a structured answer, and on Claude Haiku 5.5 its first job was stopped with 9 right of the 24
+trials that had finished. With `method="json_schema"` for an Anthropic model, in `agents/pipeline.py`, the same
+agent got 234 of 240 right. Caveat: the rule is Anthropic's, and LangChain has the method that works. The default
+is what cost the time.
+
+**Harbor's LangSmith plugin counts an agent's tokens twice, and loses the result of a trial that ran again.** The
+package is Harbor's and not LangChain's.
+- Read in the source of harbor-langsmith 0.3.1: `_emit_usage_run` adds a model run to each trial with the trial's
+  token total, for an agent that leaves no trace of its own. `_create_root_run` makes a run's id from the job and
+  the trial's name.
+- Seen in the model sweep: a run's `prompt_tokens` was exactly twice the tokens of its model calls, and its cost
+  about twice. A LangGraph agent's trace already holds every model call, and LangSmith adds the two together.
+- Seen in the same sweep: for 20 trials, every run that LangSmith held had ended in an error, and the job folder
+  held a later attempt of the same trial with a result. Read from LangSmith alone, 9 experiments scored 1 to 3
+  points lower than the result tables.
+- `evals/langsmith_plugin.py` is a subclass that leaves out the extra run and gives a trial that runs again a run
+  of its own. Caveat: it overrides methods that are not a public interface.
+
+**One flag gives the experiment table.** Seen: with `--plugin langsmith`, Harbor made a dataset and an experiment
+for each job, put the agent's trace under each trial, and wrote a score for each key of the grader's result.

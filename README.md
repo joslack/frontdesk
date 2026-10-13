@@ -135,9 +135,11 @@ The tests need the cluster's Postgres and a seed. They call no model.
 
 ## Where things come from
 
-The refund policy, the case file and the worker's prompt are refundo's, which measured them.
+The refund policy, the worker's prompt and its tools are from [refundo](https://github.com/joslack/refundo), which
+measured them.
 
 - `docs/decisions.md`: the decisions that give this its shape, each with what it costs and whose it is.
 - `docs/open-questions.md`: what the design leaves undecided.
 - `docs/friction.md`: what was rough in LangGraph Server, deepagents, LangChain, FastMCP and Claude Code while
-  this was built, with how each point is known.
+  this was built, and in LangChain, LangSmith and Harbor's plugin during the refund evaluation, with how each
+  point is known.
