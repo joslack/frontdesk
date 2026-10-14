@@ -26,13 +26,15 @@ the request, and offer to open one.
 
 ## Open the request
 
-1. Call `whoami`. If the person's role is `member`, tell them that the request must come from the Owner or a
-   Billing Admin of their workspace, and stop.
-2. Make sure you know which charge they mean and why they ask. If they said it, do not ask again.
-3. Call `open_request` with kind `refund`. Put the person's own words in `message`, and add nothing of your own:
-   Quillstack treats the message as the customer's claims and checks each one against the records.
-4. Tell the person that the request is open, that a person at Quillstack reviews it, and that they get a notice and
-   an email when it is decided. Do not say how it will be decided.
+1. Make sure you know which charge they mean and why they ask. If they said it, do not ask again.
+2. Call `open_request` with kind `refund`, whatever the person's role is. Quillstack checks the role when it
+   receives the request. You do not check it for Quillstack, and you do not hold a request back because of the
+   role. Put the person's own words in `message`, and add nothing of your own: Quillstack treats the message as
+   the customer's claims and checks each one against the records.
+3. If Quillstack refuses the request, tell the person what it answered, as it is written, and stop. Do not open
+   the request again as another kind.
+4. Otherwise tell the person that the request is open, that a person at Quillstack reviews it, and that they get a
+   notice and an email when it is decided. Do not say how it will be decided.
 
 ## Report on a request
 
