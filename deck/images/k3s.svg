@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1136 488" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif">
+  <title>frontdesk on k3s: the pods on a request's path, and who calls whom</title>
+  <defs>
+    <marker id="ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#17212B"/></marker>
+    <marker id="blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2F5BD9"/></marker>
+    <style>
+      .zone { fill: #EDEBE3; }
+      .zl { font-size: 11.5px; font-weight: 600; fill: #5F6B76; letter-spacing: 0.07em; }
+      .zs { font-size: 12.5px; fill: #5F6B76; }
+      .box { fill: #FFFFFF; stroke: #17212B; stroke-width: 1.3; }
+      .out { fill: #FFFFFF; stroke: #9AA3AB; stroke-width: 1.3; }
+      .grp { fill: #F7F6F2; stroke: #9AA3AB; stroke-width: 1.2; }
+      .t { font-size: 17px; font-weight: 650; fill: #17212B; }
+      .m { font-family: ui-monospace, Menlo, monospace; font-size: 15.5px; font-weight: 650; fill: #17212B; }
+      .b { font-size: 12.5px; fill: #47525C; }
+      .tag { font-size: 10.5px; font-weight: 650; fill: #2F5BD9; letter-spacing: 0.05em; }
+      .a { fill: none; stroke: #17212B; stroke-width: 1.4; marker-end: url(#ink); }
+      .r { fill: none; stroke: #2F5BD9; stroke-width: 2.3; marker-end: url(#blue); }
+      .l { font-size: 12px; fill: #17212B; }
+      .lr { font-size: 12px; fill: #2F5BD9; font-weight: 600; }
+    </style>
+  </defs>
+
+  <!-- Where each thing runs -->
+  <rect class="zone" x="0" y="0" width="220" height="488" rx="12"/>
+  <text class="zl" x="14" y="24">ON THE LAPTOP</text>
+  <rect class="zone" x="236" y="0" width="748" height="488" rx="12"/>
+  <text class="zl" x="252" y="24">K3S, ONE NODE IN A COLIMA VM · NAMESPACE frontdesk</text>
+  <rect class="zone" x="1000" y="0" width="136" height="488" rx="12"/>
+  <text class="zl" x="1012" y="24">HOSTED</text>
+  <text class="zs" x="252" y="478">Shown: the 8 pods on a request's path. A network policy lets only the dispatcher call the jobs pods.</text>
+
+  <!-- On the laptop -->
+  <rect class="box" x="14" y="50" width="192" height="78" rx="9"/>
+  <text class="t" x="28" y="83">A customer's agent</text>
+  <text class="b" x="28" y="106">Claude Code</text>
+
+  <rect class="box" x="14" y="300" width="192" height="78" rx="9"/>
+  <text class="t" x="28" y="333">A reviewer</text>
+  <text class="b" x="28" y="356">frontdesk review, in a terminal</text>
+
+  <!-- Pods the laptop can reach, each on a port of localhost -->
+  <rect class="box" x="252" y="50" width="148" height="78" rx="9"/>
+  <text class="tag" x="264" y="69">POD · :18000</text>
+  <text class="m" x="264" y="92">access</text>
+  <text class="b" x="264" y="113">The MCP server</text>
+
+  <rect class="box" x="252" y="166" width="148" height="58" rx="9"/>
+  <text class="tag" x="264" y="185">POD · :18080</text>
+  <text class="m" x="264" y="208">keycloak</text>
+
+  <rect class="box" x="252" y="404" width="148" height="58" rx="9"/>
+  <text class="tag" x="264" y="423">POD · :18025</text>
+  <text class="m" x="264" y="446">mailpit</text>
+
+  <rect class="box" x="436" y="262" width="184" height="122" rx="9"/>
+  <text class="tag" x="448" y="281">POD · :15432</text>
+  <text class="m" x="448" y="305">postgres</text>
+  <text class="b" x="448" y="329">The records, the request's</text>
+  <text class="b" x="448" y="347">row, and the saved runs.</text>
+  <text class="b" x="448" y="365">On a 2 Gi volume.</text>
+
+  <!-- Pods that only other pods reach -->
+  <rect class="box" x="772" y="50" width="184" height="78" rx="9"/>
+  <text class="tag" x="784" y="69">POD</text>
+  <text class="m" x="784" y="92">dispatcher</text>
+  <text class="b" x="784" y="113">Starts and resumes runs</text>
+
+  <rect class="grp" x="760" y="166" width="208" height="296" rx="12"/>
+  <text class="tag" x="772" y="186">LANGGRAPH SERVER</text>
+
+  <rect class="box" x="772" y="198" width="184" height="56" rx="9"/>
+  <text class="m" x="784" y="221">jobs-api</text>
+  <text class="b" x="784" y="241">The API. It runs nothing.</text>
+
+  <rect class="box" x="772" y="270" width="184" height="38" rx="9"/>
+  <text class="m" x="784" y="294">jobs-redis</text>
+
+  <rect class="box" x="772" y="324" width="184" height="122" rx="9"/>
+  <text class="m" x="784" y="348">jobs-queue</text>
+  <text class="b" x="784" y="371">Runs the refund worker</text>
+  <text class="b" x="784" y="389">and the ticket worker.</text>
+  <text class="b" x="784" y="411">Up to 5 runs at once.</text>
+
+  <!-- Hosted services -->
+  <rect class="out" x="1010" y="324" width="116" height="54" rx="9"/>
+  <text class="t" x="1020" y="346" style="font-size: 15px">Model</text>
+  <text class="t" x="1020" y="365" style="font-size: 15px">provider</text>
+
+  <rect class="out" x="1010" y="392" width="116" height="54" rx="9"/>
+  <text class="t" x="1020" y="415" style="font-size: 15px">LangSmith</text>
+  <text class="b" x="1020" y="434">Traces</text>
+
+  <!-- Who calls whom -->
+  <path class="a" d="M110 128 V195 H252"/>
+  <text class="l" x="181" y="186" text-anchor="middle">signs in</text>
+
+  <path class="a" d="M864 254 V270"/>
+  <path class="a" d="M864 308 V324"/>
+
+  <path class="a" d="M772 433 H400"/>
+  <text class="l" x="520" y="424" text-anchor="middle">a notice</text>
+
+  <path class="a" d="M956 351 H1010"/>
+  <path class="a" d="M956 419 H1010"/>
+
+  <!-- The path of a request -->
+  <path class="r" d="M206 89 H252"/>
+  <text class="lr" x="228" y="79" text-anchor="middle">MCP</text>
+
+  <path class="r" d="M400 89 H500 V262"/>
+  <text class="lr" x="450" y="79" text-anchor="middle">a row</text>
+
+  <path class="r" d="M560 262 V89 H772"/>
+  <text class="lr" x="666" y="79" text-anchor="middle">the unfinished rows</text>
+
+  <path class="r" d="M930 128 V198"/>
+  <text class="lr" x="921" y="154" text-anchor="end">a run</text>
+
+  <path class="r" d="M772 366 H620"/>
+  <text class="lr" x="696" y="318" text-anchor="middle">reads every</text>
+  <text class="lr" x="696" y="334" text-anchor="middle">workspace, writes</text>
+  <text class="lr" x="696" y="350" text-anchor="middle">the proposal</text>
+
+  <path class="r" d="M206 339 H436"/>
+  <text class="lr" x="321" y="329" text-anchor="middle">the decision</text>
+</svg>
